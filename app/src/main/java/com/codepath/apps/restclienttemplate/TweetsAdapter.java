@@ -51,10 +51,21 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         viewHolder.tvTime.setText(tweet.getTimeSince());
     }
 
-    //
+    //return number of tweets in list
     @Override
     public int getItemCount() {
         return tweetsList.size();
+    }
+
+    //clears all tweets from the data set. Meant to be used when refreshing dataset
+    public void clear(){
+        tweetsList.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addTweets(List<Tweet> listOfTweets){
+        tweetsList.addAll(listOfTweets);
+        notifyDataSetChanged();
     }
 
     //define the ViewHolder

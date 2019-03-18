@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +25,7 @@ public class TimelineActivity extends AppCompatActivity {
     private RecyclerView rvTweets;
     private TweetsAdapter tweetsAdapter;
     private List<Tweet> tweets;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,14 @@ public class TimelineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timeline);
 
         twitterClient = TwitterApplication.getRestClient(this);
+
+        //setup pull to refresh
+        swipeContainer = findViewById(R.id.swipeContainer);
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                                                android.R.color.holo_green_light,
+                                                android.R.color.holo_orange_light,
+                                                android.R.color.holo_red_light);
+
 
         //find the recycler view
         rvTweets = findViewById(R.id.rvTweets);
@@ -44,6 +54,14 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setAdapter(tweetsAdapter);
 
         populateHomeTimeline();
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.d("TwitterClient", "content is being refreshed");
+                populateHomeTimeline();
+            }
+        });
     }
 
     private void populateHomeTimeline() {
@@ -52,6 +70,7 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("TwitterClient", response.toString());
+                List<Tweet> tweetsToAdd = new ArrayList<>();
 
                 //iterate through the JSON array
                 //convert each object into a tweet
@@ -61,14 +80,17 @@ public class TimelineActivity extends AppCompatActivity {
                     try {
                         JSONObject jsonTweet = response.getJSONObject(i);
                         Tweet aTweet = Tweet.fromJason(jsonTweet);
-                        tweets.add(aTweet);
-                        tweetsAdapter.notifyItemInserted(tweets.size() - 1 );
+//                        tweets.add(aTweet);
+//                        tweetsAdapter.notifyItemInserted(tweets.size() - 1 );
+                        tweetsToAdd.add(aTweet);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }//for
 
-
+                tweetsAdapter.clear();
+                tweetsAdapter.addTweets(tweetsToAdd);
+                swipeContainer.setRefreshing(false);
 
             }
 
