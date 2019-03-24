@@ -1,11 +1,14 @@
 package com.codepath.apps.restclienttemplate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -104,5 +107,27 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.e("TwitterClient", errorResponse.toString());
             }
         });
+    }//populateHomeTimeline
+
+
+    /*
+    * Adding methods for the action bar
+    * */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //INflate the menu ; this adds items to the actionbar if it is present
+        return true;
+    }//onCreateOptionsMenu
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //show we tapped the edit icon
+//        Toast.makeText(this, "Compose", Toast.LENGTH_SHORT).show();
+        //navigate to the new activity
+        Intent i = new Intent(this, ComposeActivity.class);
+        startActivity(i);
+
+        return true;
     }
 }
