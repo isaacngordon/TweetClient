@@ -28,6 +28,8 @@ public class ComposeActivity extends AppCompatActivity {
         btnTweet = findViewById(R.id.btSubmit);
         tvCharCount = findViewById(R.id.tvCharCount);
 
+        tvCharCount.setText(String.format("0/%d", MAX_TWEET_LENGTH));
+
         //set click listener on button
         btnTweet.setOnClickListener(new View.OnClickListener(){
 
@@ -73,7 +75,7 @@ public class ComposeActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
 
                 String compose = etCompose.getText().toString();
-                String charCount = String.format("%d/140",compose.length());
+                String charCount = String.format("%d/%d",compose.length(), MAX_TWEET_LENGTH);
                 tvCharCount.setText(charCount);
                 if(compose.length() > MAX_TWEET_LENGTH){
                     btnTweet.setEnabled(false);
