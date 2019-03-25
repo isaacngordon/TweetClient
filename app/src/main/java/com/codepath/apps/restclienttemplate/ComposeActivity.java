@@ -5,11 +5,18 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 public class ComposeActivity extends AppCompatActivity {
 
@@ -18,6 +25,7 @@ public class ComposeActivity extends AppCompatActivity {
     private EditText etCompose;
     private Button btnTweet;
     private TextView tvCharCount;
+    private TwitterClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +35,7 @@ public class ComposeActivity extends AppCompatActivity {
         etCompose = findViewById(R.id.etCompose);
         btnTweet = findViewById(R.id.btSubmit);
         tvCharCount = findViewById(R.id.tvCharCount);
+        client = TwitterApplication.getRestClient(this);
 
         tvCharCount.setText(String.format("0/%d", MAX_TWEET_LENGTH));
 
@@ -48,10 +57,23 @@ public class ComposeActivity extends AppCompatActivity {
                 if(tweetContent.length() > MAX_TWEET_LENGTH){
                     Toast.makeText(ComposeActivity.this, "Tweet too long yo...", Toast.LENGTH_LONG).show();
                     return;
-                }
+                }//if
 
                 //tweet is good, so make API call
                 Toast.makeText(ComposeActivity.this, "Tweet posted yo...", Toast.LENGTH_LONG).show();
+                client.postTweet(tweetContent, new JsonHttpResponseHandler(){
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Log.d("TwitterClient", "Posted tweet yo" + response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        Log.d("TwitterClient", "Failed to post yo" + responseString);
+                    }
+                });
+
 
 
             }//onClick
