@@ -46,6 +46,10 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
 
+    //parcler
+    implementation 'org.parceler:parceler-api:1.1.12'
+    annotationProcessor 'org.parceler:parceler:1.1.12'
+
     // SwipeRefreshLayout library for pull-to-refresh functionality
     implementation 'com.android.support:support-v4:27.1.1'
 
