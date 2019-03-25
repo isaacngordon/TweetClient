@@ -2,6 +2,7 @@ package com.codepath.apps.restclienttemplate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +26,14 @@ import cz.msebera.android.httpclient.Header;
 
 public class TimelineActivity extends AppCompatActivity {
 
+    private final int REQUEST_CODE = 20;
+
     private TwitterClient twitterClient;
     private RecyclerView rvTweets;
     private TweetsAdapter tweetsAdapter;
     private List<Tweet> tweets;
     private SwipeRefreshLayout swipeContainer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,8 +131,22 @@ public class TimelineActivity extends AppCompatActivity {
 //        Toast.makeText(this, "Compose", Toast.LENGTH_SHORT).show();
         //navigate to the new activity
         Intent i = new Intent(this, ComposeActivity.class);
-        startActivity(i);
+        startActivityForResult(i, REQUEST_CODE);
 
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK){
+            //pull info out of the data Intent object
+            Tweet newTweet = (Tweet) Parcels.unwrap(data.getParcelableExtra("tweet"));
+
+            //update the recycler view with this tweet
+            List<Tweet> listTweet = new ArrayList<>();
+            tweets.add(0, newTweet);
+            tweetsAdapter.notifyItemInserted(0);
+            rvTweets.smoothScrollToPosition(0);
+        }
     }
 }

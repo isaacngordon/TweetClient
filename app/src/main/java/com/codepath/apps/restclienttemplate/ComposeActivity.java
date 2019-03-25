@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,9 +13,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -66,6 +70,19 @@ public class ComposeActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         Log.d("TwitterClient", "Posted tweet yo" + response.toString());
+
+                        //return a tweet object to the TimelineActivity to post
+                        try{
+                            Tweet newTweet = Tweet.fromJason(response);
+                            Intent data = new Intent();
+                            data.putExtra("tweet", Parcels.wrap(newTweet));                      //wrap and back extra
+                            setResult(RESULT_OK, data);                                                //sets result code and return objects
+                            finish();                                                                  //closes activity passing extras to parent
+
+                        } catch(JSONException je){
+                            je.printStackTrace();
+                        }
+
                     }
 
                     @Override
